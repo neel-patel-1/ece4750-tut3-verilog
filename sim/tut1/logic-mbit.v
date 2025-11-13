@@ -1,6 +1,6 @@
 module top;
-  logic [0:3] A;
-  logic [0:3] B;
+  logic [3:0] A;
+  logic [3:0] B;
   logic c;
 
   initial begin
