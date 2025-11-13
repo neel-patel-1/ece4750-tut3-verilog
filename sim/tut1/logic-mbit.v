@@ -1,8 +1,12 @@
 module top;
-  logic a, b, c, d;
+  logic [0:3] A;
+  logic [0:3] B;
+  logic c;
 
   initial begin
-    a = 4'b0000; $display( "4'b0000 = %x ", a );
-    a = 4'b1111; $display( "4'b1111 = %x ", a );
+    A = 4'b0111; $display("A=4'b%b", A);
+    B = 4'b0110; $display("B=4'b%b", B);
+    c = ~(|(A ^ B)); $display( "4'b%b == 4'b%b: %x", A, B, c);
   end
+
 endmodule
