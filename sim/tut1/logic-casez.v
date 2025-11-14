@@ -32,7 +32,7 @@ module top;
       default : b = 8'hxx;
     endcase
 
-    $display( "a = 4'b0100, b = %x", b );
+    $display( "a = 4'b01xx, b = %x", b );
 
   end
 
