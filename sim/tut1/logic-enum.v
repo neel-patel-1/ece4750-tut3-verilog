@@ -1,8 +1,7 @@
 typedef enum logic [$clog2(4)-1:0] {
-  STATE_A,
-  STATE_B,
-  STATE_C,
-  STATE_D
+  STATE_IDLE,
+  STATE_CALC,
+  STATE_DONE
 } state_t;
 
 module top;
@@ -12,12 +11,12 @@ module top;
   logic result;
 
   initial begin
-    state = STATE_A; $display("STATE_A = %d", state);
-    state = STATE_B; $display("STATE_B = %d", state);
-    state = STATE_C; $display("STATE_C = %d", state);
-    state = STATE_D; $display("STATE_D = %d", state);
+    state = STATE_IDLE; $display("STATE_IDLE = %d", state);
+    state = STATE_CALC; $display("STATE_CALC = %d", state);
+    state = STATE_DONE; $display("STATE_DONE = %d", state);
 
-    result = (state == STATE_C); $display("state == STATE_C: result=%b", result);
+    // result = (state == STATE_C); $display("state == STATE_C: result=%b", result);
+    result = (state == STATE_CALC); $display("state == STATE_CALC: result=%b", result);
   end
 
 
