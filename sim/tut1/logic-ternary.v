@@ -21,6 +21,23 @@ module top;
 
     $display( "sel = 1, c = %x", c );
 
+    sel = 2'bxx;
+    c = (sel == 2'b00) ? 8'h0a
+      : (sel == 2'b01) ? 8'h0b
+      : (sel == 2'b10) ? 8'h0c
+      : (sel == 2'b11) ? 8'h0d
+      : 8'h0e;
+
+    $display( "sel = xx, c = %b", c );
+
+    sel = 2'bx0;
+    c = (sel == 2'b00) ? 8'h0a
+      : (sel == 2'b01) ? 8'h0b
+      : (sel == 2'b10) ? 8'h0c
+      : (sel == 2'b11) ? 8'h0d
+      : 8'h0e;
+
+    $display( "sel = 0x, c = %b", c );
 
   end
 
