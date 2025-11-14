@@ -8,7 +8,9 @@ module top;
     A = 4'ha; $display("A=4'b%b", A);
     B = 4'hb; $display("B=4'b%b", B);
     C = {A, B}; $display("{ 8'hf0, 4'ha } = %x", C);
-    D = {B, {3{A}}}; $display("{ B, 3{A} } = %x", D);
+    D = {B, {3{A}}}; $display("{ B, {3{A}} } = %x", D);
+    D = {B, {A}, {A}, {A}}; $display("{ B, {A}, {A}, {A} } = %x", D);
+    D = {B, {A, A, A}}; $display("{ B, {A, A, A} } = %x", D);
 
 
   end
