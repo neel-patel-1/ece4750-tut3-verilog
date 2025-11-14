@@ -39,6 +39,12 @@ module top;
 
     $display( "sel = 0x, c = %b", c );
 
+    sel = 2'b0x;
+    c = (sel == 2'b00) ? 8'h0a
+      : (sel == 2'b01) ? 8'h0b
+      : 8'h10;
+
+
   end
 
 endmodule
