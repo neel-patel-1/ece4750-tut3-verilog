@@ -9,7 +9,7 @@ module top;
   // Clocking
 
   logic clk = 1;
-  always #5 clk = ~clk;
+  always #1 clk = ~clk;
 
   // Instaniate the design under test
 
@@ -39,20 +39,29 @@ module top;
     $dumpvars;
 
     // Reset
+    // reset = 1'b0;
+    // Cycle 1
+    in_ = 8'h01;
 
-    #11;
+    // shows variables at the end of a simtick
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+    #1;
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+    #1;
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+    #1;
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+    #1;
+    // now  out is 1, time is 4, clk is going to be 1
+    // unset reset so that increment will work
     reset = 1'b0;
 
-    // Cycle 1
-
-    in_ = 8'h01;
-    #10;
     $display( " cycle = 1: in = %x, out = %x", in_, out );
 
     // Cycle 2
 
     in_ = 8'h13;
-    #10;
+    #2;
     $display( " cycle = 1: in = %x, out = %x", in_, out );
 
     // Cycle 3
