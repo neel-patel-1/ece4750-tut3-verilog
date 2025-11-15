@@ -46,36 +46,34 @@ module top;
     // shows variables at the end of a simtick
     $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
     #1;
+
     $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
     #1;
+
     $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
     #1;
+
+    $display(" posedge, now out is 1");
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+
+    $display(" changing reset to enable further incremenents and in_ to 5");
+    in_ = 8'h05;
+    reset = 1'b0;
+
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+
+    $display(" advancing to after next posedge");
+    #1;
+
     $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
     #1;
+
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
+
+
     // now  out is 1, time is 4, clk is going to be 1
     // unset reset so that increment will work
-    reset = 1'b0;
-    #1;
 
-    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
-
-    // Cycle 2
-
-    in_ = 8'h13;
-    #2;
-    $display( " cycle = 1: in = %x, out = %x", in_, out );
-
-    // Cycle 3
-
-    in_ = 8'h25;
-    #10;
-    $display( " cycle = 1: in = %x, out = %x", in_, out );
-
-    // Cycle 4
-
-    in_ = 8'h37;
-    #10;
-    $display( " cycle = 1: in = %x, out = %x", in_, out );
 
     $finish;
   end
