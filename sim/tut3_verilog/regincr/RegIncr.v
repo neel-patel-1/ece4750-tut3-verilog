@@ -34,6 +34,9 @@ module tut3_verilog_regincr_RegIncr
   // This model is incomplete. As part of the tutorial you will insert
   // combinational logic here to model the incrementer logic.
   // '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  always @(*) begin
+    out = reg_out + 1;
+  end
 
   // You will need to uncomment this when you explore line tracing.
   //
