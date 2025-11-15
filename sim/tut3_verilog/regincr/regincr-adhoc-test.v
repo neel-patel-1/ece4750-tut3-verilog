@@ -55,8 +55,9 @@ module top;
     // now  out is 1, time is 4, clk is going to be 1
     // unset reset so that increment will work
     reset = 1'b0;
+    #1;
 
-    $display( " cycle = 1: in = %x, out = %x", in_, out );
+    $display(" t=%0t, clk=%x, reset=%x, in_=%x,  out=%x", $time, clk, reset, in_, out );
 
     // Cycle 2
 
