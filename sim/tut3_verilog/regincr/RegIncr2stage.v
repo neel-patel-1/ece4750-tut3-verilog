@@ -39,7 +39,7 @@ module tut3_verilog_regincr_RegIncr2stage
   (
     .clk (clk),
     .reset (reset),
-    .in_ (reg_incr_0_out)
+    .in_ (reg_incr_0_out),
     .out (out)
   );
 
