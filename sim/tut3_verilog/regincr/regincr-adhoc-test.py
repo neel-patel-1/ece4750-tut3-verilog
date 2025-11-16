@@ -37,7 +37,7 @@ model.elaborate()
 
 model.apply( VerilogPlaceholderPass() )
 model = VerilogTranslationImportPass()( model )
-model.apply( DefaultPassGroup() )
+model.apply( DefaultPassGroup(linetrace=True) )
 
 # Reset simulator
 
