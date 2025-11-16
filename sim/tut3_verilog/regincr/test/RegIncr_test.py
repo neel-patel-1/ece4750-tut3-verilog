@@ -6,6 +6,8 @@ from pymtl3 import *
 from pymtl3.stdlib.test_utils import run_test_vector_sim
 from ..RegIncr import RegIncr
 
+import random
+
 #-------------------------------------------------------------------------
 # test_small
 #-------------------------------------------------------------------------
@@ -46,3 +48,12 @@ def test_overflow( cmdline_opts ):
     [ 0xff, 0xff   ],
     [ 0x00, 0x00   ],
   ], cmdline_opts )
+
+def test_random( cmdline_opts ):
+  test_vector_table = [( 'in_   out*' )]
+  last_result = '?'
+  for _ in range(20):
+    rand_value = Bits8( random.randint(0,0xff))
+    test_vector_table.append( [rand_value, last_result] )
+    last_result = Bits8( rand_value + 1, trunc_int=True)
+  run_test_vector_sim( RegIncr(), test_vector_table, cmdline_opts )
