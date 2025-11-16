@@ -34,7 +34,7 @@ module tut3_verilog_regincr_RegIncr
   // This model is incomplete. As part of the tutorial you will insert
   // combinational logic here to model the incrementer logic.
   // '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  assign out = reg_out + 2;
+  assign out = reg_out + 1;
 
   // You will need to uncomment this when you explore line tracing.
   //
@@ -43,7 +43,7 @@ module tut3_verilog_regincr_RegIncr
   logic [`VC_TRACE_NBITS-1:0] str;
   `VC_TRACE_BEGIN
   begin
-    $sformat( str, "%x (%x) %x", in_, reg_out, out );
+    $sformat( str, "in:%x (%x) out:%x", in_, reg_out, out );
     vc_trace.append_str( trace_str, str );
   end
   `VC_TRACE_END
