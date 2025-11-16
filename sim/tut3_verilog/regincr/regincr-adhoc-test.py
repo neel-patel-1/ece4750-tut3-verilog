@@ -28,8 +28,8 @@ from random import shuffle
 
 input_values = [x for x in range(0,8)]
 shuffle(input_values)
-# input_values.extend( '0xff' )
-# input_values.extend( [0]*3 )
+input_values.extend( [0xff] )
+input_values.extend( [0]*3 )
 
 
 # ''' TUTORIAL TASK ''''''''''''''''''''''''''''''''''''''''''''''''''''''
