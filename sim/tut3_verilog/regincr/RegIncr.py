@@ -20,11 +20,11 @@ class RegIncr( VerilogPlaceholder, Component ):
     s.out = OutPort( 8 )
 
     # The port map by default uses the PyMTL3 port names
-    s.set_metadata( VerilogPlaceholderPass.port_map, {
-      s.in_: 'in_',
-      s.out: 'out',
-    })
+    # s.set_metadata( VerilogPlaceholderPass.port_map, {
+    #   s.in_: 'in_',
+    #   s.out: 'out',
+    # })
 
     # has_clk and has_reset are True by default
-    s.set_metadata( VerilogPlaceholderPass.has_clk, True )
-    s.set_metadata( VerilogPlaceholderPass.has_reset, True )
+    # s.set_metadata( VerilogPlaceholderPass.has_clk, True )
+    # s.set_metadata( VerilogPlaceholderPass.has_reset, True )
