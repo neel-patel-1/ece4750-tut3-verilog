@@ -16,14 +16,21 @@ from pymtl3.passes.backends.verilog import *
 
 from sys     import argv
 from RegIncr import RegIncr
+from random import shuffle
 
 # Get list of input values from command line
 
-input_values = [ int(x,0) for x in argv[1:] ]
+# input_values = [ int(x,0) for x in argv[1:] ]
 
 # Add three zero values to end of list of input values
 
-input_values.extend( [0]*3 )
+# input_values.extend( [0]*3 )
+
+input_values = [x for x in range(0,8)]
+shuffle(input_values)
+# input_values.extend( '0xff' )
+# input_values.extend( [0]*3 )
+
 
 # ''' TUTORIAL TASK ''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # This simulator script is incomplete. As part of the tutorial you will
@@ -37,7 +44,7 @@ model.elaborate()
 
 model.apply( VerilogPlaceholderPass() )
 model = VerilogTranslationImportPass()( model )
-model.apply( DefaultPassGroup(textwave=True) )
+model.apply( DefaultPassGroup(vcdwave="regincr-adhoc-test") )
 
 # Reset simulator
 
@@ -59,5 +66,3 @@ for input_value in input_values:
   # Tick simulator one cycle
 
   model.sim_tick()
-
-model.print_textwave()
