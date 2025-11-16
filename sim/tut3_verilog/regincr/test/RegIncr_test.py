@@ -38,3 +38,11 @@ def test_large( cmdline_opts ):
 # for random testing.
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+def test_overflow( cmdline_opts ):
+  run_test_vector_sim( RegIncr(), [
+    ('in_   out*'),
+    [ 0x00, '?'    ],
+    [ 0xfe, 0x01 ],
+    [ 0xff, 0xff   ],
+    [ 0x00, 0x00   ],
+  ], cmdline_opts )
