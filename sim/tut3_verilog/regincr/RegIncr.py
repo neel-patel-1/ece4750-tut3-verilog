@@ -12,7 +12,7 @@ class RegIncr( VerilogPlaceholder, Component ):
 
   # Constructor
 
-  def construct( s ):
+  def construct( s, p_bitwidth=8 ):
 
     # Port-based interface
 
