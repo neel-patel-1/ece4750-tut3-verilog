@@ -13,16 +13,18 @@
 `include "vc/trace.v"
 
 module tut3_verilog_regincr_RegIncr
-(
+#(
+  parameter p_bitwidth = 8
+)(
   input  logic       clk,
   input  logic       reset,
-  input  logic [7:0] in_,
-  output logic [7:0] out
+  input  logic [p_bitwidth-1:0] in_,
+  output logic [p_bitwidth-1:0] out
 );
 
   // Sequential logic
 
-  logic [7:0] reg_out;
+  logic [p_bitwidth-1:0] reg_out;
   always @( posedge clk ) begin
     if ( reset )
       reg_out <= 0;
