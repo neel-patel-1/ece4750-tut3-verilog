@@ -16,8 +16,8 @@ class RegIncr( VerilogPlaceholder, Component ):
 
     # Port-based interface
 
-    s.in_ = InPort ( 8 )
-    s.out = OutPort( 8 )
+    s.in_ = InPort ( p_bitwidth )
+    s.out = OutPort( p_bitwidth )
 
     # The port map by default uses the PyMTL3 port names
     # s.set_metadata( VerilogPlaceholderPass.port_map, {
