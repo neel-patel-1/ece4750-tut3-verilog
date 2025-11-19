@@ -116,3 +116,12 @@ def test_sort_fl( test_params ):
 @pytest.mark.parametrize( "n", [ 1, 2, 3, 4, 5, 6 ] )
 def test_sort_fl_random( n ):
   run_test_vector_sim( SortUnitFL(), mk_test_vector_table( 1, tvec_random ) )
+
+
+@pytest.mark.parametrize( **test_case_table )
+def test_already_sorted_increasing( test_params ):
+  assert( test_params.inputs == sorted( test_params.inputs ) )
+
+@pytest.mark.parametrize( **test_case_table )
+def test_already_sorted_decreasing( test_params ):
+  assert( test_params.inputs == sorted( test_params.inputs, reverse=True ) )
