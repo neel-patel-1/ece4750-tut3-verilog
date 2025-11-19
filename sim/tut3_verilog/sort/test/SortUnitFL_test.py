@@ -125,3 +125,9 @@ def test_already_sorted_increasing( test_params ):
 @pytest.mark.parametrize( **test_case_table )
 def test_already_sorted_decreasing( test_params ):
   assert( test_params.inputs == sorted( test_params.inputs, reverse=True ) )
+
+@pytest.mark.parametrize( **test_case_table )
+def test_12bit( test_params ):
+  nstages = test_params.nstages
+  inputs  = [ [ randint(0,0xfff) for _ in range(4) ] for _ in range(20) ]
+  run_test_vector_sim( SortUnitFL( p_nbits=12 ), mk_test_vector_table( 1, inputs ) )
