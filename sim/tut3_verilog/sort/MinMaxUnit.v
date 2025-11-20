@@ -7,6 +7,9 @@
 `ifndef TUT3_VERILOG_SORT_MIN_MAX_UNIT_V
 `define TUT3_VERILOG_SORT_MIN_MAX_UNIT_V
 
+`include "vc/trace.v"
+`include "vc/regs.v"
+
 module tut3_verilog_sort_MinMaxUnit
 #(
   parameter p_nbits = 1
@@ -26,6 +29,15 @@ module tut3_verilog_sort_MinMaxUnit
       out_max = in0;
     end
   end
+
+  `ifndef SYNTHESIS
+  logic [`VC_TRACE_NBITS-1:0] str;
+  `VC_TRACE_BEGIN
+  begin
+    $sformat( str, "in0=%x,in1=%x,min=%x,max=%x", in0, in1, out_min, out_max );
+  end
+  `VC_TRACE_END
+  `endif /* SYNTHESIS */
 
 endmodule
 
