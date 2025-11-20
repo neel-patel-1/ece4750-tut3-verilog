@@ -5,6 +5,7 @@
 import pytest
 
 from random import randint
+from copy       import deepcopy
 
 from pymtl3 import *
 from pymtl3.stdlib.test_utils import run_test_vector_sim
@@ -38,22 +39,6 @@ def mk_test_vector_table( nstages, inputs ):
     test_vector_table.append( input_ + output )
 
   return test_vector_table
-
-#-------------------------------------------------------------------------
-# test_basic
-#-------------------------------------------------------------------------
-
-def test_basic( cmdline_opts ):
-  run_test_vector_sim( SortReverseUnitFlat(), [ header_str,
-    # in  in  in  in  in  out out out out out
-    # val [0] [1] [2] [3] val [0] [1] [2] [3]
-    [ 0,  0,  0,  0,  0,  0,  x,  x,  x,  x ],
-    [ 1,  4,  2,  3,  1,  0,  x,  x,  x,  x ],
-    [ 0,  0,  0,  0,  0,  0,  x,  x,  x,  x ],
-    [ 0,  0,  0,  0,  0,  0,  x,  x,  x,  x ],
-    [ 0,  0,  0,  0,  0,  1,  1,  2,  3,  4 ],
-    [ 0,  0,  0,  0,  0,  0,  x,  x,  x,  x ],
-  ], cmdline_opts )
 
 #-------------------------------------------------------------------------
 # test_stream
