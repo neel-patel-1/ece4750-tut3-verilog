@@ -65,7 +65,7 @@ def parse_cmdline():
     choices=["cl","rtl-flat","rtl-struct"] )
 
   p.add_argument( "--input", default="random",
-    choices=["random","sorted-fwd","sorted-rev","zeros"] )
+    choices=["random","sorted-fwd","sorted-rev","zeros", "random-below-16"] )
 
   p.add_argument( "--trace",     action="store_true" )
   p.add_argument( "--stats",     action="store_true" )
@@ -92,6 +92,10 @@ def main():
   if opts.input == "random":
     for i in range(ninputs):
       inputs.append( [ randint(0,0xff) for i in range(4) ] )
+
+  elif opts.input == "random-below-16":
+    for i in range(ninputs):
+      inputs.append( [ randint(0,0x0f) for i in range(4) ] )
 
   elif opts.input == "sorted-fwd":
     for i in range(ninputs):
