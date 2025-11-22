@@ -30,6 +30,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   input  logic        b_reg_en,   // Enable for B register
   input  logic [1:0]  a_mux_sel,  // Sel for mux in front of A reg
   input  logic        b_mux_sel,  // sel for mux in front of B reg
+  input  logic        a_sub_mux_sel, // sel for mux in front of output
 
   // Status signals
 
@@ -124,9 +125,21 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (sub_out)
   );
 
+  // A Sub Mux
+
+  logic [c_nbits-1:0] a_sub_mux_out;
+
+  vc_Mux2#(c_nbits) a_sub_mux
+  (
+    .sel (a_sub_mux_sel),
+    .in0 (a_reg_out),
+    .in1 (sub_out),
+    .out (a_sub_mux_out)
+  );
+
   // Connect to output port
 
-  assign ostream_msg = sub_out;
+  assign ostream_msg = a_sub_mux_out;
 
 endmodule
 
@@ -298,6 +311,7 @@ module tut3_verilog_gcd_GcdUnit
   logic        b_reg_en;
   logic [1:0]  a_mux_sel;
   logic        b_mux_sel;
+  logic        a_sub_mux_sel;
 
   // Data signals
 
