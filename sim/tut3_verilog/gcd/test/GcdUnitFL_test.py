@@ -80,6 +80,21 @@ for a, b, result in random_cases:
   random_msgs.extend( [ concat(Bits16(a),Bits16(b)), Bits16(result) ] )
 
 #-------------------------------------------------------------------------
+# Test Case: Coprimes
+#-------------------------------------------------------------------------
+
+coprime_cases = [
+  ( 2,     7     , 1    ),
+  ( 11,      21     , 1    ),
+  ( 10,     9    , 1    ),
+]
+
+coprime_msgs = []
+for a, b, result in coprime_cases:
+  coprime_msgs.extend( [ concat(Bits16(a), Bits16(b)), Bits16(result) ])
+
+
+#-------------------------------------------------------------------------
 # Test Case Table
 #-------------------------------------------------------------------------
 
@@ -90,6 +105,8 @@ test_case_table = mk_test_case_table([
   [ "basic_0x5",  basic_msgs,  0,         5,         ],
   [ "basic_3x9",  basic_msgs,  3,         9,         ],
   [ "random_3x9", random_msgs, 3,         9,         ],
+  [ "coprime_0x0", coprime_msgs, 0, 0,         ],
+  [ "coprime_3x5", coprime_msgs, 3, 5,         ],
 ])
 #-------------------------------------------------------------------------
 # Test cases
