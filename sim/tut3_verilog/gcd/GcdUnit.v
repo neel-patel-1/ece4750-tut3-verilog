@@ -30,7 +30,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   input  logic        b_reg_en,   // Enable for B register
   input  logic [1:0]  a_mux_sel,  // Sel for mux in front of A reg
   input  logic        b_mux_sel,  // sel for mux in front of B reg
-  input  logic        a_sub_mux_sel, // sel for mux in front of output
+  input  logic        b_sub_mux_sel, // sel for mux in front of output
 
   // Status signals
 
@@ -125,21 +125,21 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (sub_out)
   );
 
-  // A Sub Mux
+  // B or Sub Mux
 
-  logic [c_nbits-1:0] a_sub_mux_out;
+  logic [c_nbits-1:0] b_sub_mux_out;
 
-  vc_Mux2#(c_nbits) a_sub_mux
+  vc_Mux2#(c_nbits) b_sub_mux
   (
-    .sel (a_sub_mux_sel),
-    .in0 (a_reg_out),
+    .sel (b_sub_mux_sel),
+    .in0 (b_reg_out),
     .in1 (sub_out),
-    .out (a_sub_mux_out)
+    .out (b_sub_mux_out)
   );
 
   // Connect to output port
 
-  assign ostream_msg = a_sub_mux_out;
+  assign ostream_msg = b_sub_mux_out;
 
 endmodule
 
@@ -165,10 +165,12 @@ module tut3_verilog_gcd_GcdUnitCtrl
   output logic        b_reg_en,   // Enable for B register
   output logic [1:0]  a_mux_sel,  // Sel for mux in front of A reg
   output logic        b_mux_sel,  // sel for mux in front of B reg
+  output logic        b_sub_mux_sel, // sel for mux in front of output
 
   // Data signals
 
   input  logic        is_b_zero,  // Output of zero comparator
+  input  logic        is_a_zero,
   input  logic        is_a_lt_b   // Output of less-than comparator
 );
 
@@ -236,6 +238,10 @@ module tut3_verilog_gcd_GcdUnitCtrl
   localparam b_ld  = 1'd0;
   localparam b_a   = 1'd1;
 
+  localparam sub_x   = 1'dx;
+  localparam sub_b   = 1'd0;
+  localparam sub_sub = 1'd1;
+
   function void cs
   (
     input logic       cs_istream_rdy,
@@ -243,7 +249,8 @@ module tut3_verilog_gcd_GcdUnitCtrl
     input logic [1:0] cs_a_mux_sel,
     input logic       cs_a_reg_en,
     input logic       cs_b_mux_sel,
-    input logic       cs_b_reg_en
+    input logic       cs_b_reg_en,
+    input logic       cs_b_sub_mux_sel
   );
   begin
     istream_rdy = cs_istream_rdy;
@@ -252,6 +259,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
     b_reg_en    = cs_b_reg_en;
     a_mux_sel   = cs_a_mux_sel;
     b_mux_sel   = cs_b_mux_sel;
+    b_sub_mux_sel = cs_b_sub_mux_sel;
   end
   endfunction
 
@@ -267,15 +275,16 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   always_comb begin
 
-    cs( 0, 0, a_x, 0, b_x, 0 );
+    cs( 0, 0, a_x, 0, b_x, 0, 1);
     case ( state_reg )
-      //                             istream ostream a mux  a  b mux b
+      //                             istream ostream a_mux  a  b_mux b sub_mux
       //                             rdy  val  sel    en sel   en
-      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1 );
-      STATE_CALC: if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1 );
-             else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0 );
-      STATE_DONE:                cs( 0,   1,   a_x,   0, b_x,  0 );
-      default                    cs('x,  'x,   a_x,  'x, b_x, 'x );
+      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, sub_x );
+      STATE_CALC: if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
+             else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
+      STATE_DONE: if (is_a_zero) cs( 0,   1,   a_x,   0, b_x,  0, sub_b );
+             else if (!is_a_zero) cs( 0,   1,   a_x,   0, b_x,  0, sub_sub );
+      default                    cs('x,  'x,   a_x,  'x, b_x, 'x, sub_x );
 
     endcase
 
@@ -311,11 +320,12 @@ module tut3_verilog_gcd_GcdUnit
   logic        b_reg_en;
   logic [1:0]  a_mux_sel;
   logic        b_mux_sel;
-  logic        a_sub_mux_sel = 0;
+  logic        b_sub_mux_sel;
 
   // Data signals
 
   logic        is_b_zero;
+  logic        is_a_zero;
   logic        is_a_lt_b;
 
   // Control unit
