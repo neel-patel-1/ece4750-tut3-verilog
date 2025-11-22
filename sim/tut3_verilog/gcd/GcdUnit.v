@@ -311,7 +311,7 @@ module tut3_verilog_gcd_GcdUnit
   logic        b_reg_en;
   logic [1:0]  a_mux_sel;
   logic        b_mux_sel;
-  logic        a_sub_mux_sel;
+  logic        a_sub_mux_sel = 0;
 
   // Data signals
 

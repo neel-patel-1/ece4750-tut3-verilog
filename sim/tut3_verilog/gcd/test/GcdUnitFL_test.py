@@ -93,6 +93,19 @@ coprime_msgs = []
 for a, b, result in coprime_cases:
   coprime_msgs.extend( [ concat(Bits16(a), Bits16(b)), Bits16(result) ])
 
+#-------------------------------------------------------------------------
+# Test Case: one or more zeros
+# -------------------------------------------------------------------------
+
+zero_cases = [
+  ( 0,     7     , 7    ),
+  ( 11,      0     , 11    ),
+  ( 0,     0    , 0    ),
+]
+
+zero_msgs = []
+for a, b, result in zero_cases:
+  zero_msgs.extend( [ concat(Bits16(a), Bits16(b)), Bits16(result) ])
 
 #-------------------------------------------------------------------------
 # Test Case Table
@@ -107,6 +120,8 @@ test_case_table = mk_test_case_table([
   [ "random_3x9", random_msgs, 3,         9,         ],
   [ "coprime_0x0", coprime_msgs, 0, 0,         ],
   [ "coprime_3x5", coprime_msgs, 3, 5,         ],
+  [ "zero_0x0",   zero_msgs,   0,         0,         ],
+  [ "zero_4x7",   zero_msgs,   4,         7,         ],
 ])
 #-------------------------------------------------------------------------
 # Test cases
