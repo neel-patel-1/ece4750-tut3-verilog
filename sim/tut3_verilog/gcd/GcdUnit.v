@@ -180,7 +180,6 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   localparam STATE_IDLE = 2'd0;
   localparam STATE_CALC = 2'd1;
-  localparam STATE_DONE = 2'd2;
 
   //----------------------------------------------------------------------
   // State
@@ -208,7 +207,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   assign req_go       = istream_val && istream_rdy;
   assign resp_go      = ostream_val && ostream_rdy;
-  assign is_calc_done = !is_a_lt_b && is_b_zero;
+  assign is_calc_done = (is_a_zero || is_b_zero) && ostream_rdy;
 
   always_comb begin
 
@@ -217,8 +216,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
     case ( state_reg )
 
       STATE_IDLE: if ( req_go    )    state_next = STATE_CALC;
-      STATE_CALC: if ( is_calc_done ) state_next = STATE_DONE;
-      STATE_DONE: if ( resp_go   )    state_next = STATE_IDLE;
+      STATE_CALC: if ( is_calc_done ) state_next = STATE_IDLE;
       default:    state_next = 'x;
 
     endcase
@@ -380,9 +378,6 @@ module tut3_verilog_gcd_GcdUnit
         else
           vc_trace.append_str( trace_str, "C " );
       end
-
-      ctrl.STATE_DONE:
-        vc_trace.append_str( trace_str, "D " );
 
       default:
         vc_trace.append_str( trace_str, "? " );
