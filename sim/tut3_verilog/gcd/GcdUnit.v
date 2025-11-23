@@ -204,10 +204,12 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic req_go;
   logic resp_go;
   logic is_calc_done;
+  logic done_and_next;
 
   assign req_go       = istream_val && istream_rdy;
   assign resp_go      = ostream_val && ostream_rdy;
   assign is_calc_done = (is_a_zero || is_b_zero) && ostream_rdy;
+  assign done_and_next = is_calc_done && istream_val;
 
   always_comb begin
 
@@ -216,7 +218,8 @@ module tut3_verilog_gcd_GcdUnitCtrl
     case ( state_reg )
 
       STATE_IDLE: if ( req_go    )    state_next = STATE_CALC;
-      STATE_CALC: if ( is_calc_done ) state_next = STATE_IDLE;
+      STATE_CALC: if ( done_and_next ) state_next = STATE_CALC;
+      else if ( is_calc_done ) state_next = STATE_IDLE;
       default:    state_next = 'x;
 
     endcase
@@ -279,8 +282,8 @@ module tut3_verilog_gcd_GcdUnitCtrl
       //                             rdy  val  sel    en sel   en
       STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, sub_x );
       STATE_CALC:
-            if ( is_b_zero ) cs( 0,   1,   a_x,   0, b_x,  0, sub_sub );
-            else if ( is_a_zero) cs(0,   1,  a_x,   0, b_x,  0, sub_b );
+            if ( is_b_zero ) cs( 1,   1,   a_ld,   1, b_ld,  1, sub_sub );
+            else if ( is_a_zero) cs(1,   1,  a_ld,   1, b_ld,  1, sub_b );
             else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
             else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, sub_x );
