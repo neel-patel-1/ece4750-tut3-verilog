@@ -282,10 +282,18 @@ module tut3_verilog_gcd_GcdUnitCtrl
       //                             rdy  val  sel    en sel   en
       STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, sub_x );
       STATE_CALC:
-            if ( is_b_zero ) cs( 1,   1,   a_ld,   1, b_ld,  1, sub_sub );
-            else if ( is_a_zero) cs(1,   1,  a_ld,   1, b_ld,  1, sub_b );
-            else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
-            else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
+            if ( ostream_rdy ) begin
+              if ( is_b_zero ) cs( 1,   1,   a_ld,   1, b_ld,  1, sub_sub );
+              else if ( is_a_zero) cs(1,   1,  a_ld,   1, b_ld,  1, sub_b );
+              else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
+              else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
+            end
+            else begin
+              if ( is_b_zero ) cs( 0, 1, a_x, 0, b_x, 0, sub_sub );
+              else if ( is_a_zero) cs(0, 1, a_x, 0, b_x, 0, sub_b );
+              else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
+              else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
+            end
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, sub_x );
 
     endcase
