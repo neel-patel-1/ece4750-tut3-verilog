@@ -299,10 +299,10 @@ module tut3_verilog_gcd_GcdUnitCtrl
       STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, swap_x );
       STATE_CALC:
         if (calc_done) begin
-          cs( next_ready,   calc_done,   a_ld,  1, b_ld,  1, swap_x);
+          cs( next_ready,   1,   a_ld,  1, b_ld,  1, swap_x);
         end
         else begin
-          cs( next_ready,   calc_done,   a_sub, 1, b_reg, 1, do_swap);
+          cs( 0,   0,   a_sub, 1, b_reg, 1, do_swap);
         end
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, swap_x );
 
