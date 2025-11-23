@@ -139,7 +139,7 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   vc_ZeroComparator#(c_nbits) b_zero
   (
-    .in    (b_reg_out),
+    .in    (b_swap_mux_out),
     .out   (is_b_zero)
   );
 
@@ -207,7 +207,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
       state_reg <= STATE_IDLE;
     end
     else begin
-      state_reg <= STATE_CALC;
+      state_reg <= state_next;
     end
   end
 
@@ -253,8 +253,6 @@ module tut3_verilog_gcd_GcdUnitCtrl
   localparam b_reg   = 1'd1;
 
   localparam swap_x   = 1'dx;
-  localparam swap_0   = 1'd0;
-  localparam swap_1   = 1'd1;
 
   function void cs
   (
