@@ -28,9 +28,9 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   input  logic        a_reg_en,   // Enable for A register
   input  logic        b_reg_en,   // Enable for B register
-  input  logic [1:0]  a_mux_sel,  // Sel for mux in front of A reg
+  input  logic        a_mux_sel,  // Sel for mux in front of A reg
   input  logic        b_mux_sel,  // sel for mux in front of B reg
-  input  logic        b_sub_mux_sel, // sel for mux in front of output
+  input  logic        swap_mux_sel,
 
   // Status signals
 
@@ -55,7 +55,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   logic [c_nbits-1:0] sub_out;
   logic [c_nbits-1:0] a_mux_out;
 
-  vc_Mux3#(c_nbits) a_mux
+  vc_Mux2#(c_nbits) a_mux
   (
     .sel   (a_mux_sel),
     .in0   (istream_msg_a),
@@ -116,7 +116,7 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   vc_Mux2#(c_nbits) b_swap_mux
   (
-    .sel   (b_swap_mux_sel),
+    .sel   (swap_mux_sel),
     .in0   (b_reg_out),
     .in1   (a_reg_out),
     .out   (b_swap_mux_out)
@@ -129,7 +129,7 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   vc_Mux2#(c_nbits) a_swap_mux
   (
-    .sel   (a_swap_mux_sel),
+    .sel   (swap_mux_sel),
     .in0   (a_reg_out),
     .in1   (b_reg_out),
     .out   (a_swap_mux_out)
@@ -143,14 +143,6 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (is_b_zero)
   );
 
-  // A Zero comparator
-
-  vc_ZeroComparator#(c_nbits) a_zero
-  (
-    .in    (a_reg_out),
-    .out   (is_a_zero)
-  );
-
   // Subtractor
 
   vc_Subtractor#(c_nbits) sub
@@ -160,19 +152,9 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (sub_out)
   );
 
-  // Output Mux
-
-  vc_Mux#(c_nbits) out_mux
-  (
-    .sel (out_mux_sel),
-    .in0 (b_swap_mux_out),
-    .in1 (a_swap_mux_out),
-    .out (out_mux_out)
-  );
-
   // Connect to output port
 
-  assign ostream_msg = out_mux_out;
+  assign ostream_msg = a_swap_mux_out;
 
 endmodule
 
@@ -196,14 +178,13 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   output logic        a_reg_en,   // Enable for A register
   output logic        b_reg_en,   // Enable for B register
-  output logic [1:0]  a_mux_sel,  // Sel for mux in front of A reg
+  output logic        a_mux_sel,  // Sel for mux in front of A reg
   output logic        b_mux_sel,  // sel for mux in front of B reg
-  output logic        b_sub_mux_sel, // sel for mux in front of output
+  output logic        swap_mux_sel,
 
   // Data signals
 
   input  logic        is_b_zero,  // Output of zero comparator
-  input  logic        is_a_zero,
   input  logic        is_a_lt_b   // Output of less-than comparator
 );
 
@@ -226,7 +207,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
       state_reg <= STATE_IDLE;
     end
     else begin
-      state_reg <= state_next;
+      state_reg <= STATE_CALC;
     end
   end
 
@@ -241,7 +222,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   assign req_go       = istream_val && istream_rdy;
   assign resp_go      = ostream_val && ostream_rdy;
-  assign is_calc_done = (is_a_zero || is_b_zero) && ostream_rdy;
+  assign is_calc_done = is_b_zero && ostream_rdy;
   assign done_and_next = is_calc_done && istream_val;
 
   always_comb begin
@@ -265,26 +246,25 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   localparam a_x   = 2'dx;
   localparam a_ld  = 2'd0;
-  localparam a_b   = 2'd1;
   localparam a_sub = 2'd2;
 
   localparam b_x   = 1'dx;
   localparam b_ld  = 1'd0;
-  localparam b_a   = 1'd1;
+  localparam b_reg   = 1'd1;
 
-  localparam sub_x   = 1'dx;
-  localparam sub_b   = 1'd0;
-  localparam sub_sub = 1'd1;
+  localparam swap_x   = 1'dx;
+  localparam swap_0   = 1'd0;
+  localparam swap_1   = 1'd1;
 
   function void cs
   (
     input logic       cs_istream_rdy,
     input logic       cs_ostream_val,
-    input logic [1:0] cs_a_mux_sel,
+    input logic       cs_a_mux_sel,
     input logic       cs_a_reg_en,
     input logic       cs_b_mux_sel,
     input logic       cs_b_reg_en,
-    input logic       cs_b_sub_mux_sel
+    input logic       cs_swap_mux_sel,
   );
   begin
     istream_rdy = cs_istream_rdy;
@@ -293,7 +273,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
     b_reg_en    = cs_b_reg_en;
     a_mux_sel   = cs_a_mux_sel;
     b_mux_sel   = cs_b_mux_sel;
-    b_sub_mux_sel = cs_b_sub_mux_sel;
+    swap_mux_sel = cs_swap_mux_sel;
   end
   endfunction
 
@@ -301,9 +281,13 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   logic do_swap;
   logic do_sub;
+  logic calc_done;
+  logic next_ready;
 
   assign do_swap = is_a_lt_b;
   assign do_sub  = !is_b_zero;
+  assign calc_done = is_b_zero;
+  assign next_ready = istream_val;
 
   // Set outputs using a control signal "table"
 
@@ -311,23 +295,16 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
     cs( 0, 0, a_x, 0, b_x, 0, 1);
     case ( state_reg )
-      //                             istream ostream a_mux  a  b_mux b sub_mux
-      //                             rdy  val  sel    en sel   en
-      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, sub_x );
+      // istream ostream a_mux a_reg b_mux b_reg swap
+      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, swap_x );
       STATE_CALC:
-            if ( ostream_rdy ) begin
-              if ( is_b_zero ) cs( 1,   1,   a_ld,   1, b_ld,  1, sub_sub );
-              else if ( is_a_zero) cs(1,   1,  a_ld,   1, b_ld,  1, sub_b );
-              else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
-              else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
-            end
-            else begin
-              if ( is_b_zero ) cs( 0, 1, a_x, 0, b_x, 0, sub_sub );
-              else if ( is_a_zero) cs(0, 1, a_x, 0, b_x, 0, sub_b );
-              else if ( do_swap ) cs( 0,   0,   a_b,   1, b_a,  1, sub_x );
-              else if ( do_sub  ) cs( 0,   0,   a_sub, 1, b_x,  0, sub_x );
-            end
-      default                    cs('x,  'x,   a_x,  'x, b_x, 'x, sub_x );
+        if (calc_done) begin
+          cs( next_ready,   calc_done,   a_ld,  1, b_ld,  1, swap_x);
+        end
+        else begin
+          cs( next_ready,   calc_done,   a_sub, 1, b_reg, 1, do_swap);
+        end
+      default                    cs('x,  'x,   a_x,  'x, b_x, 'x, swap_x );
 
     endcase
 
@@ -361,14 +338,13 @@ module tut3_verilog_gcd_GcdUnit
 
   logic        a_reg_en;
   logic        b_reg_en;
-  logic [1:0]  a_mux_sel;
+  logic        a_mux_sel;
   logic        b_mux_sel;
-  logic        b_sub_mux_sel;
+  logic        swap_mux_sel;
 
   // Data signals
 
   logic        is_b_zero;
-  logic        is_a_zero;
   logic        is_a_lt_b;
 
   // Control unit
