@@ -50,7 +50,8 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   // A Mux
 
-  logic [c_nbits-1:0] b_reg_out;
+  logic [c_nbits-1:0] out_mux_out;
+
   logic [c_nbits-1:0] sub_out;
   logic [c_nbits-1:0] a_mux_out;
 
@@ -58,8 +59,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   (
     .sel   (a_mux_sel),
     .in0   (istream_msg_a),
-    .in1   (b_reg_out),
-    .in2   (sub_out),
+    .in1   (out_mux_out),
     .out   (a_mux_out)
   );
 
@@ -84,11 +84,13 @@ module tut3_verilog_gcd_GcdUnitDpath
   (
     .sel   (b_mux_sel),
     .in0   (istream_msg_b),
-    .in1   (a_reg_out),
+    .in1   (b_swap_mux_out),
     .out   (b_mux_out)
   );
 
   // B register
+
+  logic [c_nbits-1:0] b_reg_out;
 
   vc_EnReg#(c_nbits) b_reg
   (
@@ -108,7 +110,32 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (is_a_lt_b)
   );
 
-  // Zero comparator
+  // B Swap Mux
+
+  logic [c_nbits-1:0] b_swap_mux_out;
+
+  vc_Mux2#(c_nbits) b_swap_mux
+  (
+    .sel   (b_swap_mux_sel),
+    .in0   (b_reg_out),
+    .in1   (a_reg_out),
+    .out   (b_swap_mux_out)
+  );
+
+
+  // A Swap Mux
+
+  logic [c_nbits-1:0] a_swap_mux_out;
+
+  vc_Mux2#(c_nbits) a_swap_mux
+  (
+    .sel   (a_swap_mux_sel),
+    .in0   (a_reg_out),
+    .in1   (b_reg_out),
+    .out   (a_swap_mux_out)
+  );
+
+  // B Zero comparator
 
   vc_ZeroComparator#(c_nbits) b_zero
   (
@@ -116,30 +143,36 @@ module tut3_verilog_gcd_GcdUnitDpath
     .out   (is_b_zero)
   );
 
+  // A Zero comparator
+
+  vc_ZeroComparator#(c_nbits) a_zero
+  (
+    .in    (a_reg_out),
+    .out   (is_a_zero)
+  );
+
   // Subtractor
 
   vc_Subtractor#(c_nbits) sub
   (
-    .in0   (a_reg_out),
-    .in1   (b_reg_out),
+    .in0   (a_swap_mux_out),
+    .in1   (b_swap_mux_out),
     .out   (sub_out)
   );
 
-  // B or Sub Mux
+  // Output Mux
 
-  logic [c_nbits-1:0] b_sub_mux_out;
-
-  vc_Mux2#(c_nbits) b_sub_mux
+  vc_Mux#(c_nbits) out_mux
   (
-    .sel (b_sub_mux_sel),
-    .in0 (b_reg_out),
-    .in1 (sub_out),
-    .out (b_sub_mux_out)
+    .sel (out_mux_sel),
+    .in0 (b_swap_mux_out),
+    .in1 (a_swap_mux_out),
+    .out (out_mux_out)
   );
 
   // Connect to output port
 
-  assign ostream_msg = b_sub_mux_out;
+  assign ostream_msg = out_mux_out;
 
 endmodule
 
