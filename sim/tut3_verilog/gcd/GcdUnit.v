@@ -50,8 +50,6 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   // A Mux
 
-  logic [c_nbits-1:0] out_mux_out;
-
   logic [c_nbits-1:0] sub_out;
   logic [c_nbits-1:0] a_mux_out;
 
@@ -59,7 +57,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   (
     .sel   (a_mux_sel),
     .in0   (istream_msg_a),
-    .in1   (out_mux_out),
+    .in1   (sub_out),
     .out   (a_mux_out)
   );
 
@@ -299,8 +297,11 @@ module tut3_verilog_gcd_GcdUnitCtrl
         if (calc_done) begin
           cs( next_ready,   1,   a_ld,  1, b_ld,  1, swap_x);
         end
+        else if (do_swap) begin
+          cs( 0,   0,   a_sub, 1, b_reg, 1, 1);
+        end
         else begin
-          cs( 0,   0,   a_sub, 1, b_reg, 1, do_swap);
+          cs( 0,   0,   a_sub, 1, b_reg, 1, 0);
         end
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, swap_x );
 
