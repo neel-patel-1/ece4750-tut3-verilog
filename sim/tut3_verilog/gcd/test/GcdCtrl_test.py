@@ -30,6 +30,15 @@ class TestHarness( Component ):
     s.sink.istream_val = InPort(1)
     s.sink.istream_rdy = OutPort(1)
 
+    s.sink.a_reg_en = InPort(1)
+    s.sink.b_reg_en = InPort(1)
+    s.sink.a_mux_sel = InPort(1)
+    s.sink.b_mux_sel = InPort(1)
+    s.sink.swap_mux_sel = InPort(1)
+
+    s.src.is_b_zero = InPort(1)
+    s.src.a_lt_b = InPort(1)
+
     s.gcdctrl  = gcdctrl
 
     # Connect
