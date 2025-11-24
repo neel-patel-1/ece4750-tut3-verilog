@@ -35,6 +35,7 @@ module tut3_verilog_gcd_GcdUnitDpath
   // Status signals
 
   output logic        is_b_zero,  // Output of zero comparator
+  output logic        is_sub_zero,
   output logic        is_a_lt_b   // Output of less-than comparator
 );
 
@@ -123,14 +124,14 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   // A Swap Mux
 
-  logic [c_nbits-1:0] a_swap_mux_out;
+  logic [c_nbits-1:0] out_mux_out;
 
   vc_Mux2#(c_nbits) a_swap_mux
   (
     .sel   (swap_mux_sel),
     .in0   (a_reg_out),
     .in1   (b_reg_out),
-    .out   (a_swap_mux_out)
+    .out   (out_mux_out)
   );
 
   // B Zero comparator
@@ -145,14 +146,32 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   vc_Subtractor#(c_nbits) sub
   (
-    .in0   (a_swap_mux_out),
+    .in0   (out_mux_out),
     .in1   (b_swap_mux_out),
     .out   (sub_out)
   );
 
+  // Sub Zero comparator
+
+  vc_ZeroComparator#(c_nbits) sub_zero
+  (
+    .in    (sub_out),
+    .out   (is_sub_zero)
+  );
+
+  // Output Mux
+
+  vc_Mux2#(c_nbits) out_mux
+  (
+    .sel   (out_mux_sel),
+    .in0   (out_mux_out),
+    .in1   (sub_out),
+    .out   (out_mux_out)
+  );
+
   // Connect to output port
 
-  assign ostream_msg = a_swap_mux_out;
+  assign ostream_msg = out_mux_out;
 
 endmodule
 
@@ -350,10 +369,12 @@ module tut3_verilog_gcd_GcdUnit
   logic        a_mux_sel;
   logic        b_mux_sel;
   logic        swap_mux_sel;
+  logic       out_mux_sel;
 
   // Data signals
 
   logic        is_b_zero;
+  logic       is_sub_zero;
   logic        is_a_lt_b;
 
   // Control unit
