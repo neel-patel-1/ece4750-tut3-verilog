@@ -242,9 +242,9 @@ module tut3_verilog_gcd_GcdUnitCtrl
   // State Outputs
   //----------------------------------------------------------------------
 
-  localparam a_x   = 2'dx;
-  localparam a_ld  = 2'd0;
-  localparam a_sub = 2'd2;
+  localparam a_x   = 1'dx;
+  localparam a_ld  = 1'd0;
+  localparam a_sub = 1'd1;
 
   localparam b_x   = 1'dx;
   localparam b_ld  = 1'd0;
