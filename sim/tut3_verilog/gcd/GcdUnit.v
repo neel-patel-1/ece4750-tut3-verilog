@@ -289,13 +289,13 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   always_comb begin
 
-    cs( 0, 0, a_x, 0, b_x, 0, 1);
+    cs( 0, 0, a_x, 0, b_x, 0, 0);
     case ( state_reg )
       // istream ostream a_mux a_reg b_mux b_reg swap
-      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, swap_x );
+      STATE_IDLE:                cs( 1,   0,   a_ld,  1, b_ld, 1, 0 );
       STATE_CALC:
         if (calc_done) begin
-          cs( next_ready,   1,   a_ld,  1, b_ld,  1, swap_x);
+          cs( next_ready,   1,   a_ld,  1, b_ld,  1, 0);
         end
         else if (do_swap) begin
           cs( 0,   0,   a_sub, 1, b_reg, 1, 1);
@@ -303,7 +303,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
         else begin
           cs( 0,   0,   a_sub, 1, b_reg, 1, 0);
         end
-      default                    cs('x,  'x,   a_x,  'x, b_x, 'x, swap_x );
+      default                    cs('x,  'x,   a_x,  'x, b_x, 'x, 0 );
 
     endcase
 
