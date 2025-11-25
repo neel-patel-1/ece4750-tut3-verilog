@@ -239,8 +239,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic done_and_no_next;
   logic done_and_blocked;
 
-  // assign is_calc_done = (is_b_zero || is_sub_zero);
-  assign is_calc_done = (is_b_zero );
+  assign is_calc_done = is_b_zero;
 
   always_comb begin
 
@@ -316,32 +315,24 @@ module tut3_verilog_gcd_GcdUnitCtrl
       // istream ostream a_mux a_reg b_mux b_reg out_mux
       STATE_IDLE: cs( 1,   0,   a_ld,  1, b_ld, 1, 0);
       STATE_CALC:
-        // if (calc_done) begin
-          if (is_b_zero) begin
-            cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_a);
+        if (is_b_zero) begin
+          if (ostream_rdy) begin
+            cs( 1, 1, a_ld, 1, b_ld, 1, out_a);
           end
-          // else if (is_sub_zero) begin
-          //   cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_b);
-          // end
-        // end
+          else begin
+            cs( 0, 1, a_x, 0, b_x, 0, out_a);
+          end
+        end
         else begin
           cs( 0, 0, a_sub, 1, b_reg, 1, out_x);
         end
       STATE_DONE:
-        if (istream_val && ostream_rdy) begin
-          if (is_b_zero) begin
+        if (ostream_rdy) begin
+          if (istream_val) begin
             cs( 1,   1,   a_ld,  1, b_ld, 1, out_a);
           end
-          else if (is_sub_zero) begin
-            cs( 1,   1,   a_ld,  1, b_ld, 1, out_b);
-          end
-        end
-        else if (ostream_rdy && !istream_val) begin
-          if (is_b_zero) begin
+          else begin
             cs( 0,   1,   a_x,  0, b_x, 0, out_a);
-          end
-          else if (is_sub_zero) begin
-            cs( 0,   1,   a_x,  0, b_x, 0, out_b);
           end
         end
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, 0 );
