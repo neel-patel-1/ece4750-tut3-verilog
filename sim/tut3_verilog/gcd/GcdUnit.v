@@ -303,7 +303,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic calc_done;
   logic next_ready;
 
-  assign calc_done = is_b_zero;
+  assign calc_done = is_b_zero ;
   assign next_ready = istream_val;
 
   // Set outputs using a control signal "table"
@@ -315,14 +315,14 @@ module tut3_verilog_gcd_GcdUnitCtrl
       // istream ostream a_mux a_reg b_mux b_reg out_mux
       STATE_IDLE: cs( 1,   0,   a_ld,  1, b_ld, 1, 0);
       STATE_CALC:
-        if (calc_done) begin
+        // if (calc_done) begin
           if (is_b_zero) begin
             cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_a);
           end
-          else if (is_sub_zero) begin
-            cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_b);
-          end
-        end
+          // else if (is_sub_zero) begin
+            // cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_b);
+          // end
+        // end
         else begin
           cs( 0, 0, a_sub, 1, b_reg, 1, out_x);
         end
@@ -439,6 +439,10 @@ module tut3_verilog_gcd_GcdUnit
         vc_trace.append_str( trace_str, "? " );
 
     endcase
+
+    if (ctrl.is_b_zero) begin
+      vc_trace.append_str( trace_str, "GCD " );
+    end
 
     vc_trace.append_str( trace_str, ")" );
 
