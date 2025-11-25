@@ -240,9 +240,6 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic done_and_blocked;
 
   assign is_calc_done = (is_b_zero || is_sub_zero);
-  assign done_and_next = is_calc_done && ostream_rdy && istream_val;
-  assign done_and_no_next = is_calc_done && ostream_rdy && !istream_val;
-  assign done_and_blocked = is_calc_done && !ostream_rdy;
 
   always_comb begin
 
@@ -251,11 +248,12 @@ module tut3_verilog_gcd_GcdUnitCtrl
     case ( state_reg )
 
       STATE_IDLE: if ( istream_rdy && istream_val )    state_next = STATE_CALC;
-      STATE_CALC: if ( done_and_blocked ) state_next = STATE_DONE;
-      else if ( done_and_next ) state_next = STATE_CALC;
-      else if ( done_and_no_next )          state_next = STATE_IDLE;
+      STATE_CALC: if ( is_calc_done && !ostream_rdy ) state_next = STATE_DONE;
+      else if ( is_calc_done && ostream_rdy && istream_val ) state_next = STATE_CALC;
+      else if ( is_calc_done && ostream_rdy && !istream_val ) state_next = STATE_IDLE;
       STATE_DONE: if ( ostream_rdy && istream_val )    state_next = STATE_CALC;
       else if ( ostream_rdy && !istream_val ) state_next = STATE_IDLE;
+      else state_next = STATE_DONE;
       default:    state_next = 'x;
 
     endcase
@@ -329,8 +327,21 @@ module tut3_verilog_gcd_GcdUnitCtrl
           cs( 0, 0, a_sub, 1, b_reg, 1, out_x);
         end
       STATE_DONE:
-        if (next_ready) begin
-          cs( 0,   1,   a_ld,  1, b_ld, 1, 0);
+        if (istream_val && ostream_rdy) begin
+          if (is_b_zero) begin
+            cs( 1,   1,   a_ld,  1, b_ld, 1, out_a);
+          end
+          else if (is_sub_zero) begin
+            cs( 1,   1,   a_ld,  1, b_ld, 1, out_b);
+          end
+        end
+        else if (ostream_rdy && !istream_val) begin
+          if (is_b_zero) begin
+            cs( 0,   1,   a_x,  0, b_x, 0, out_a);
+          end
+          else if (is_sub_zero) begin
+            cs( 0,   1,   a_x,  0, b_x, 0, out_b);
+          end
         end
       default                    cs('x,  'x,   a_x,  'x, b_x, 'x, 0 );
 
@@ -420,6 +431,9 @@ module tut3_verilog_gcd_GcdUnit
 
       ctrl.STATE_CALC:
         vc_trace.append_str( trace_str, "C " );
+
+      ctrl.STATE_DONE:
+        vc_trace.append_str( trace_str, "D " );
 
       default:
         vc_trace.append_str( trace_str, "? " );
