@@ -6,8 +6,7 @@ import pytest
 import random
 
 from pymtl3 import *
-from pymtl3.stdlib.test_utils import mk_test_case_table, run_sim
-from pymtl3.stdlib.stream import StreamSourceFL, StreamSinkFL
+from pymtl3.stdlib.test_utils import run_test_vector_sim
 
 from tut3_verilog.gcd.GcdUnitCtrl import GcdUnitCtrl
 
@@ -46,3 +45,10 @@ class TestHarness( Component ):
     s.gcd.ostream_rdy //= s.sink.istream_rdy
     s.gcd.ostream_val //= s.sink.istream_val
     s.src.ostream_rdy //= s.gcd.istream_rdy
+
+def test_swap( cmdline_opts ):
+  run_test_vector_sim( GcdUnitCtrl(), [
+    # istream_val istream_rdy ostream_val ostream_rdy is_b_zero a_lt_b | a_reg_en b_reg_en a_mux_sel b_mux_sel swap_mux_sel
+    [     0,        '?',        0,        0,        0,      0  |    0,      0,      0,      0,      0 ],
+    [     0,        '?',        0,        0,        0,      0  |    0,      0,      0,      0,      0 ],
+  ])
