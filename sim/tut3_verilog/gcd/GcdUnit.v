@@ -33,7 +33,7 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   // Status signals
 
-  output logic        is_sub_zero
+  output logic        is_b_or_sub_out_zero
 );
 
   localparam c_nbits = 16;
@@ -143,11 +143,27 @@ module tut3_verilog_gcd_GcdUnitDpath
 
   // Sub Zero comparator
 
+  logic is_sub_zero;
   vc_ZeroComparator#(c_nbits) sub_zero
   (
     .in    (sub_out),
     .out   (is_sub_zero)
   );
+
+  // B swap out zero comparator
+
+  logic is_b_swap_zero;
+  vc_ZeroComparator#(c_nbits) b_swap_zero
+  (
+    .in    (b_swap_mux_out),
+    .out   (is_b_swap_zero)
+  );
+
+  always_comb begin
+
+    is_b_or_sub_out_zero = is_sub_zero | is_b_swap_zero;
+
+  end
 
   // Connect to output port
 
@@ -180,7 +196,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
 
   // Data signals
 
-  input  logic        is_sub_zero
+  input  logic        is_b_or_sub_out_zero
 );
 
   //----------------------------------------------------------------------
@@ -216,7 +232,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic done_and_no_next;
   logic done_and_blocked;
 
-  assign is_calc_done = is_sub_zero;
+  assign is_calc_done = is_b_or_sub_out_zero;
 
   always_comb begin
 
@@ -274,7 +290,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic calc_done;
   logic next_ready;
 
-  assign calc_done = is_sub_zero ;
+  assign calc_done = is_b_or_sub_out_zero ;
   assign next_ready = istream_val;
 
   // Set outputs using a control signal "table"
@@ -286,7 +302,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
       // istream ostream a_mux a_reg b_mux b_reg out_mux
       STATE_IDLE: cs( 1,   0,   a_ld,  1, b_ld, 1 );
       STATE_CALC:
-        if (is_sub_zero) begin
+        if (is_b_or_sub_out_zero) begin
           if (ostream_rdy) begin
             cs( 1, 1, a_ld, 1, b_ld, 1 );
           end
@@ -345,7 +361,7 @@ module tut3_verilog_gcd_GcdUnit
 
   // Data signals
 
-  logic        is_sub_zero;
+  logic        is_b_or_sub_out_zero;
   logic        is_a_lt_b;
 
   // Control unit
@@ -401,7 +417,7 @@ module tut3_verilog_gcd_GcdUnit
 
     endcase
 
-    if (ctrl.is_sub_zero) begin
+    if (ctrl.is_b_or_sub_out_zero) begin
       vc_trace.append_str( trace_str, "GCD " );
     end
 
