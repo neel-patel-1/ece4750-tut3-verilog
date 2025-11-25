@@ -239,7 +239,8 @@ module tut3_verilog_gcd_GcdUnitCtrl
   logic done_and_no_next;
   logic done_and_blocked;
 
-  assign is_calc_done = (is_b_zero || is_sub_zero);
+  // assign is_calc_done = (is_b_zero || is_sub_zero);
+  assign is_calc_done = (is_b_zero );
 
   always_comb begin
 
@@ -320,7 +321,7 @@ module tut3_verilog_gcd_GcdUnitCtrl
             cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_a);
           end
           // else if (is_sub_zero) begin
-            // cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_b);
+          //   cs( ostream_rdy, 1, a_ld, 1, b_ld, 1, out_b);
           // end
         // end
         else begin
